@@ -28,14 +28,28 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Demo Login Credentials
 
-Username - admin
-Password - password123
+| Username | Password     |
+|----------|--------------|
+| admin    | password123  |
+| thomas   | frontend2024 |
+| ops      | ops1234      |
 
-Username1 - thomas
-Password1 - frontend2024
+---
 
-Username2 - ops
-Password2 - ops1234
+## Available Scripts
+
+| Command              | Description                        |
+|----------------------|------------------------------------|
+| `npm run dev`        | Start dev server on port 5173      |
+| `npm run build`      | TypeScript check + production build|
+| `npm run preview`    | Preview production build locally   |
+| `npm run test`       | Run all tests once                 |
+| `npm run test:watch` | Run tests in watch mode            |
+| `npm run test:coverage` | Run tests with coverage report  |
+
+---
+
+## Features
 
 ### Core
 - **`/products`** — Paginated product list (10 per page) with skeleton loading states
@@ -51,6 +65,45 @@ Password2 - ops1234
 - **Brand chart** — Bar chart (Recharts) showing product count per brand, top 8 brands
 - **Auth mock** — Fake login with username/password validation, token stored in sessionStorage, protected routes
 - **Tests** — RTL + Vitest covering: utils, ProductTable (render, click, keyboard, stock states), Pagination (disabled states, page change), FiltersContext (set/reset, page reset on filter change), AuthContext (login/logout), AddProductModal (validation, ESC close)
+
+---
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── charts/         # BrandChart (Recharts)
+│   ├── layout/         # AppLayout, Sidebar, Header
+│   ├── products/       # ProductTable, ProductFilters, Pagination, AddProductModal
+│   └── ui/             # Spinner, Skeleton, Badge, EmptyState, ErrorState, StarRating
+├── lib/
+│   ├── api.ts          # All fetch functions
+│   ├── AuthContext.tsx  # Auth Context (mock login)
+│   ├── FiltersContext.tsx # Filters + pagination Context
+│   ├── queryKeys.ts    # Centralised React Query keys
+│   └── utils.ts        # formatCurrency, formatDate, getStockStatus, etc.
+├── pages/
+│   ├── LoginPage.tsx
+│   ├── ProductsPage.tsx
+│   ├── ProductDetailPage.tsx
+│   └── NotFoundPage.tsx
+├── test/
+│   ├── setup.ts
+│   ├── helpers.tsx      # renderWithProviders, makeProduct, makeProductList
+│   ├── utils.test.ts
+│   ├── ProductTable.test.tsx
+│   ├── Pagination.test.tsx
+│   ├── FiltersContext.test.tsx
+│   ├── AuthContext.test.tsx
+│   └── AddProductModal.test.tsx
+└── types/
+    └── index.ts         # All TypeScript interfaces
+```
+
+---
+
+## Design Decisions
 
 ### State management: Two React Contexts
 - **`AuthContext`** — Manages auth state (user, token). Persisted to `sessionStorage` so the user stays logged in on page refresh within the session.
@@ -81,6 +134,19 @@ Password2 - ops1234
 - Pagination uses `aria-current="page"` on the active page and `aria-label` on all navigation buttons.
 - Images have meaningful `alt` text; decorative elements are `aria-hidden`.
 
+---
+
+## Trade-offs
+
+| Decision | Trade-off |
+|----------|-----------|
+| Client-side brand/price filter | Simpler, but fetches all page data before filtering. Acceptable for this dataset size; would need server-side support at scale. |
+| CSS Modules over Tailwind | More verbose but zero class name collisions and no purge configuration needed. Tailwind would be faster to write for a larger team. |
+| sessionStorage for auth token | Lost on tab close. Would use httpOnly cookies or a proper auth service in production. |
+| No optimistic update on list | Adding a product invalidates and refetches the query rather than optimistically inserting. dummyjson returns a mock ID so true optimistic insertion would be misleading. |
+
+---
+
 ## What I'd Do Next With More Time
 
 1. **Virtualised table rows** — For very large datasets (1000+ rows), use `@tanstack/react-virtual` to only render visible rows, reducing DOM nodes and improving scroll performance.
@@ -102,3 +168,23 @@ Password2 - ops1234
 9. **Error monitoring** — Integrate Sentry for production error tracking with React Error Boundaries at the route level.
 
 10. **Storybook** — Document all UI primitives (Badge, Spinner, EmptyState, etc.) in Storybook for team reference and visual regression testing.
+
+---
+
+## Tech Stack
+
+| Tool | Version | Role |
+|------|---------|------|
+| React | 18 | UI |
+| Vite | 5 | Build tool |
+| TypeScript | 5 | Type safety |
+| React Router | 6 | Client-side routing |
+| TanStack Query | 5 | Data fetching, caching |
+| Recharts | 2 | Brand distribution chart |
+| Lucide React | 0.383 | Icons |
+| Vitest | 1 | Test runner |
+| React Testing Library | 15 | Component tests |
+
+---
+
+Built by Thomas Ogiator
